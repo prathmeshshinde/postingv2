@@ -11,20 +11,16 @@ const Login: React.FC = () => {
   const { Title } = Typography;
 
   const onFinish = async (values: any) => {
-    setError("");
-    await login(values.email, values.password);
-    navigate("/");
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    setError(errorInfo);
+    try {
+      await login(values.email, values.password);
+      navigate("/");
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   return (
     <Layout style={{ height: "100vh" }}>
-      {error ? (
-        <p className="no-comments-text">Error Please try Again!</p>
-      ) : null}
       <div className="form-div" style={{ height: "100vh" }}>
         <div className="form-box">
           <div className="form-title">
@@ -32,12 +28,24 @@ const Login: React.FC = () => {
               Login
             </Title>
           </div>
+          {error ? (
+            <p
+              style={{
+                textAlign: "center",
+                color: "red",
+                margin: "0px 0px 10px 0px",
+                fontSize: "15px",
+                fontWeight: "500",
+              }}
+            >
+              {error}
+            </p>
+          ) : null}
           <Form
             name="normal_login"
             className="login-form"
             initialValues={{ remember: true }}
             onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
           >
             <Form.Item
               name="email"

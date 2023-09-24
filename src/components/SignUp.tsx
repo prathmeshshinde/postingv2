@@ -6,22 +6,26 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { addDoc, collection, getFirestore } from "firebase/firestore";
 
 const SignUp: React.FC = () => {
-  const [error, setError] = useState("");
+  const [error, setError] = useState<any>("");
   const navigate = useNavigate();
   const { Title } = Typography;
   const { signup }: any = useUserAuth();
   const db = getFirestore();
 
   const onFinish = async (values: any) => {
-    setError("");
-    const signedUpUser = await signup(values.email, values.password);
-    await addDoc(collection(db, "users"), {
-      username: values.username,
-      userId: signedUpUser.user.uid,
-      bio: "Add Bio",
-      profile: "",
-    });
-    navigate("/");
+    try {
+      setError("");
+      const signedUpUser = await signup(values.email, values.password);
+      await addDoc(collection(db, "users"), {
+        username: values.username,
+        userId: signedUpUser.user.uid,
+        bio: "Add Bio",
+        profile: "",
+      });
+      navigate("/");
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -37,6 +41,19 @@ const SignUp: React.FC = () => {
               Sign Up
             </Title>
           </div>
+          {error ? (
+            <p
+              style={{
+                textAlign: "center",
+                color: "red",
+                margin: "0px 0px 10px 0px",
+                fontSize: "15px",
+                fontWeight: "500",
+              }}
+            >
+              {error}
+            </p>
+          ) : null}
 
           <Form
             name="normal_login"

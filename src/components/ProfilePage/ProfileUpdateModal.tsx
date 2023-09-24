@@ -42,7 +42,7 @@ const ProfileUpdateModal: React.FC<any> = ({
 
         <Form.Item
           name={["bio", "bio"]}
-          label="Introduction"
+          label="Bio"
           initialValue={currUser?.bio}
         >
           <Input.TextArea />
