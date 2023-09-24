@@ -7,6 +7,7 @@ import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../../App";
 import Posts from "../HomePage/Posts";
 import ProfileUpdateModal from "./ProfileUpdateModal";
+import { Link } from "react-router-dom";
 
 type NotificationType = "success" | "info" | "warning" | "error";
 
@@ -74,13 +75,13 @@ const Profile: React.FC<any> = ({
         });
 
         const newposts = postDocs.filter((ele: any) => {
-          return ele.userId === currUser.userId;
+          return ele?.userId === currUser?.userId;
         });
         setUserPost(newposts);
         setLoading(false);
       })
       .catch((err) => {
-        console.log();
+        console.log(err.message);
       });
   };
 
@@ -94,64 +95,83 @@ const Profile: React.FC<any> = ({
   return (
     <Context.Provider value={contextValue}>
       {contextHolder}
-      {loading ? (
-        <div className="loading"></div>
-      ) : (
-        <Layout className="profile-payout-div">
-          <Layout className="site-layout scroll-app profile-layout">
-            <Header />
-            <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
-              <div className="profile-main">
-                <div className="profile-head">
-                  <div className="image-circle">
-                    {currUser?.profile === "" ? (
-                      <div className="profile-image-conatainer">
-                        <p className="profile-image-circle">
-                          {userProfile.username.charAt(0)}
-                        </p>
+      {currUser?.userId ? (
+        <>
+          {loading ? (
+            <div className="loading"></div>
+          ) : (
+            <Layout className="profile-payout-div">
+              <Layout className="site-layout scroll-app profile-layout">
+                <Header />
+                <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
+                  <div className="profile-main">
+                    <div className="profile-head">
+                      <div className="image-circle">
+                        {currUser?.profile === "" ? (
+                          <div className="profile-image-conatainer">
+                            <p className="profile-image-circle">
+                              {userProfile.username.charAt(0)}
+                            </p>
+                          </div>
+                        ) : (
+                          <img
+                            className="image-circle"
+                            src={userProfile?.profile}
+                            alt="profile"
+                          />
+                        )}
                       </div>
-                    ) : (
-                      <img
-                        className="image-circle"
-                        src={userProfile?.profile}
-                        alt="profile"
-                      />
-                    )}
+                      <div>
+                        <Button type="primary" onClick={showModal}>
+                          Edit Profile
+                        </Button>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="username-profile">
+                        {userProfile?.username}{" "}
+                      </p>
+                      <p className="email-profile">{user?.email}</p>
+                      <p className="bio-profile">{userProfile?.bio}</p>
+                    </div>
                   </div>
-                  <div>
-                    <Button type="primary" onClick={showModal}>
-                      Edit Profile
-                    </Button>
-                  </div>
-                </div>
-                <div>
-                  <p className="username-profile">{userProfile?.username} </p>
-                  <p className="email-profile">{user?.email}</p>
-                  <p className="bio-profile">{userProfile?.bio}</p>
-                </div>
-              </div>
 
-              <ProfileUpdateModal
-                isModalOpen={isModalOpen}
-                handleCancel={handleCancel}
-                onFinish={onFinish}
-                currUser={userProfile}
-              />
+                  <ProfileUpdateModal
+                    isModalOpen={isModalOpen}
+                    handleCancel={handleCancel}
+                    onFinish={onFinish}
+                    currUser={userProfile}
+                  />
 
-              {userPost.length === 0 ? (
-                <p className="user-posts">User not posted Anything</p>
-              ) : (
-                <Posts
-                  posts={userPost}
-                  likedPosts={likedPosts}
-                  deleteLikePost={deleteLikePost}
-                  bookmarkPost={bookmarkPost}
-                  removeBookmarkPosts={removeBookmarkPosts}
-                />
-              )}
-            </Content>
-          </Layout>
-        </Layout>
+                  {userPost.length === 0 ? (
+                    <p className="user-posts">User not posted Anything</p>
+                  ) : (
+                    <Posts
+                      posts={userPost}
+                      likedPosts={likedPosts}
+                      deleteLikePost={deleteLikePost}
+                      bookmarkPost={bookmarkPost}
+                      removeBookmarkPosts={removeBookmarkPosts}
+                    />
+                  )}
+                </Content>
+              </Layout>
+            </Layout>
+          )}
+        </>
+      ) : (
+        <Link
+          to="/login"
+          style={{
+            textDecoration: "underline",
+            textAlign: "center",
+            fontSize: "25px",
+            marginTop: "30px",
+            fontWeight: "600",
+          }}
+        >
+          Login here
+        </Link>
       )}
     </Context.Provider>
   );
